@@ -1,3 +1,5 @@
 .conda
 imagenette
-data_adv
+data_adv_vit
+data_adv_resnet
+*.zip

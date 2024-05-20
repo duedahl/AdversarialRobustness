@@ -1,7 +1,12 @@
+# Adversarial Robustness of ViT vs ResNet
+
+This is our group project for DD2424 at KTH.
+
+## Setup
+
 To use the notebooks, you need to set up a virtual environment as instructed in setup. 
 Additionally, you need the imagenette dataset in the root folder. (Or change the paths in the code.)
 
-## Setup
 ```bash
 conda create -p .conda python=3.12 -y
 ```
@@ -17,6 +22,17 @@ conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvi
 pip install -r requirements.txt
 ```
 
+## Generate Adversarial Dataset
+
+Below are example scripts to generate an adversarial dataset for the validation data of imagenette with microsoft/resnet-152 in ./data_adv_resnet and google/vit-base-patch16-224 in ./data_adv_vit respectively.
+
+```bash
+python ./genAdvDataset.py --path "./data_adv_resnet" --dataset "./imagenette/imagenette2/val" --model "microsoft/resnet-152"
+```
+
+```bash
+python ./genAdvDataset.py --path "./data_adv_vit" --dataset "./imagenette/imagenette2/val" --model "google/vit-base-patch16-224"
+```
 
 ## Setup Vim - Not working, only linux
 
