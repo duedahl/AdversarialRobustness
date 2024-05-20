@@ -2,6 +2,20 @@
 
 This is our group project for DD2424 at KTH.
 
+## Overview
+
+Overview of repository structure and file contents
+    
+    ```bash
+    .
+    ├── README.md
+    ├── requirements.txt
+    ├── genAdvDataset.py
+    ├── robustnessAnalysisBaseline.ipynb    
+    ├── fgsm.ipynb - Deprecated
+    ```
+
+
 ## Setup
 
 To use the notebooks, you need to set up a virtual environment as instructed in setup. 
