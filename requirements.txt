@@ -6,3 +6,4 @@ timm==1.0.3
 scipy==1.13.0
 scikit-image==0.23.2
 seaborn==0.13.2
+tensorboard==2.16.2

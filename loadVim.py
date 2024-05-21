@@ -54,3 +54,15 @@ def loadVim():
     model = VimWrapper(model, confproxymod.config)
     
     return model, processor
+
+def prepareDownstreamModel():
+    # Load Model and prepare processor
+    model, processor = loadVim()
+    # Freeze all layers
+    for layer in model.vim_model.parameters():
+        layer.requires_grad = False
+    # replace fully connected layer
+    out_features = 10
+    model.vim_model.head = nn.Linear(model.vim_model.head.in_features, out_features, bias = True)
+    
+    return model, processor
