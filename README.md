@@ -11,7 +11,10 @@ Overview of repository structure and file contents
     ├── README.md
     ├── requirements.txt
     ├── genAdvDataset.py
-    ├── robustnessAnalysisBaseline.ipynb    
+    ├── robustnessAnalysisBaseline.ipynb 
+    ├── imagenette - location of imagenette folder, not in git
+    ├── mamba_ssm - author modification of mamba_ssm from https://github.com/hustvl/Vim
+    ├── vim - vim model folder from https://github.com/hustvl/Vim
     ├── fgsm.ipynb - Deprecated
     ```
 
