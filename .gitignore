@@ -3,6 +3,8 @@ imagenette
 data_adv_vit
 data_adv_resnet
 data_adv_vim
+CelebFacesTrain2
+CelebFacesTrain3
 *.zip
 *.pth
 .ipynb_checkpoints/
