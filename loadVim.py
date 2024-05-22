@@ -7,6 +7,7 @@ import requests
 from matplotlib import pyplot as plt
 from torchvision import datasets
 from transformers import ViTImageProcessor, ViTForImageClassification
+from transformers import AutoImageProcessor, AutoModelForImageClassification
 import sys
 
 from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
@@ -55,7 +56,7 @@ def loadVim():
     
     return model, processor
 
-def prepareDownstreamModel():
+def prepareDownstreamVim():
     # Load Model and prepare processor
     model, processor = loadVim()
     # Freeze all layers
@@ -66,3 +67,30 @@ def prepareDownstreamModel():
     model.vim_model.head = nn.Linear(model.vim_model.head.in_features, out_features, bias = True)
     
     return model, processor
+
+def prepareDownstreamVit():
+    # Load Model and prepare processor
+    model = ViTForImageClassification.from_pretrained("google/vit-base-patch16-224")
+    processor = ViTImageProcessor.from_pretrained("google/vit-base-patch16-224")
+    # Freeze all layers
+    for layer in model.parameters():
+        layer.requires_grad = False
+    # replace fully connected layer
+    out_features = 10
+    model.classifier = nn.Linear(model.head.in_features, out_features)
+    
+    return model, processor
+
+def prepareDownstreamResnet():
+    processor = AutoImageProcessor.from_pretrained("microsoft/resnet-152")
+    #Maybe use vit processor instead??
+    model = AutoModelForImageClassification.from_pretrained("microsoft/resnet-152")
+
+    # Freeze all layers
+    for layer in model.parameters():
+        layer.requires_grad = False
+    
+    # replace fully connected layer
+    out_features = 10
+    model.classifier = nn.Sequential(nn.Flatten(start_dim=1,end_dim=1), 
+                                     nn.Linear(model.classifier.in_features, out_features, bias=True))
