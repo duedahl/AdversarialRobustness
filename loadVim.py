@@ -12,8 +12,6 @@ import sys
 
 from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 
-import models_mamba as vm
-
 
 # Create wrapper object of model so inference output stored in logits attribute
 class SimpleNamespace:
@@ -33,6 +31,8 @@ class VimWrapper(nn.Module):
         return SimpleNamespace(logits=output)
 
 def loadVim():
+    import models_mamba as vm
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     sys.path.insert(0, '/home/jupyter/AdversarialRobustness')
     sys.path.insert(0, '/home/jupyter/AdversarialRobustness/vim')
@@ -77,7 +77,7 @@ def prepareDownstreamVit():
         layer.requires_grad = False
     # replace fully connected layer
     out_features = 10
-    model.classifier = nn.Linear(model.head.in_features, out_features)
+    model.classifier = nn.Linear(model.classifier.in_features, out_features)
     
     return model, processor
 
