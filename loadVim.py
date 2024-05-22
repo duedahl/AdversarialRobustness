@@ -16,7 +16,7 @@ sys.path.insert(0, '/home/jupyter/AdversarialRobustness')
 sys.path.insert(0, '/home/jupyter/AdversarialRobustness/vim')
 original_path = os.environ.get('PATH')
 os.environ['PATH'] = original_path + ':/sbin'
-import models_mamba as vm
+
 
 
 # Create wrapper object of model so inference output stored in logits attribute
@@ -37,6 +37,8 @@ class VimWrapper(nn.Module):
         return SimpleNamespace(logits=output)
 
 def loadVim():
+    import models_mamba as vm
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     sys.path.insert(0, '/home/jupyter/AdversarialRobustness')
     sys.path.insert(0, '/home/jupyter/AdversarialRobustness/vim')
