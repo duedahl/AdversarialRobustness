@@ -29,9 +29,6 @@ class VimWrapper(nn.Module):
         super(VimWrapper, self).__init__()
         self.vim_model = vim_model
         self.config = SimpleNamespace(id2label=config.id2label, label2id=config.label2id)
-        
-    def load_state_dict(self, state_dict):
-        return self.vim_model.load_state_dict(state_dict)
     
     def forward(self, x):
         # Use the original model to compute the output
