@@ -45,7 +45,7 @@ pip install -r requirements.txt
 
 ### Baseline
 
-Below are example scripts to generate an adversarial dataset for the validation data of imagenette with microsoft/resnet-152 in ./data_adv_resnet and google/vit-base-patch16-224 in ./data_adv_vit respectively.
+Below are example scripts to generate an adversarial dataset for the validation data of imagenette with microsoft/resnet-152 in ./data_adv_resnet and google/vit-base-patch16-224 in ./data_adv_vit respectively. Generation for Vim models take place in the notebook ```vimGenAdv.ipynb```
 
 ```bash
 python ./genAdvDataset.py --path "./data_adv_resnet" --dataset "./imagenette/imagenette2/val" --model "microsoft/resnet-152"
@@ -71,6 +71,16 @@ python ./genAdvDataset.py --path "./CelebAdv/CelAdvVitA" --dataset "./CelebSubse
 
 ```bash
 python ./genAdvDataset.py --path "./CelebAdv/CelAdvVitB" --dataset "./CelebSubset/CelebVal" --model "google/vit-base-patch16-224" --checkpoint "./models/VitB.pth"
+```
+
+### For Robustness of Adversarially Trained Models
+
+```bash
+python ./genAdvDataset.py --path "./AdvRobustnessData/RobustnessResNetA" --dataset "./CelebSubset/CelebTest" --model "microsoft/resnet-152" --checkpoint "./models/AdvResNetA.pth"
+```
+
+```bash
+python ./genAdvDataset.py --path "./AdvRobustnessData/RobustnessVitA" --dataset "./CelebSubset/CelebTest" --model "google/vit-base-patch16-224" --checkpoint "./models/AdvVitA.pth"
 ```
 
 ## Setup Vim - Not working, only linux
