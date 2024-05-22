@@ -8,9 +8,15 @@ from matplotlib import pyplot as plt
 from torchvision import datasets
 from transformers import ViTImageProcessor, ViTForImageClassification
 from transformers import AutoImageProcessor, AutoModelForImageClassification
-import sys
+import sys, os
 
 from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
+
+sys.path.insert(0, '/home/jupyter/AdversarialRobustness')
+sys.path.insert(0, '/home/jupyter/AdversarialRobustness/vim')
+original_path = os.environ.get('PATH')
+os.environ['PATH'] = original_path + ':/sbin'
+
 
 
 # Create wrapper object of model so inference output stored in logits attribute
@@ -23,6 +29,9 @@ class VimWrapper(nn.Module):
         super(VimWrapper, self).__init__()
         self.vim_model = vim_model
         self.config = SimpleNamespace(id2label=config.id2label, label2id=config.label2id)
+        
+    def load_state_dict(self, state_dict):
+        return self.vim_model.load_state_dict(state_dict)
     
     def forward(self, x):
         # Use the original model to compute the output
@@ -82,7 +91,7 @@ def prepareDownstreamVit():
     return model, processor
 
 def prepareDownstreamResnet():
-    processor = AutoImageProcessor.from_pretrained("microsoft/resnet-152")
+    processor = AutoImageProcessor.from_pretrained("google/vit-base-patch16-224")
     #Maybe use vit processor instead??
     model = AutoModelForImageClassification.from_pretrained("microsoft/resnet-152")
 
@@ -92,5 +101,6 @@ def prepareDownstreamResnet():
     
     # replace fully connected layer
     out_features = 10
-    model.classifier = nn.Sequential(nn.Flatten(start_dim=1,end_dim=1), 
-                                     nn.Linear(model.classifier.in_features, out_features, bias=True))
+    model.classifier = nn.Sequential(nn.Flatten(), 
+                                     nn.Linear(model.classifier[1].in_features, out_features, bias=True))
+    return model, processor

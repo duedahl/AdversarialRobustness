@@ -7,6 +7,8 @@ from captum.robust import FGSM, MinParamPerturbation
 from skimage.metrics import structural_similarity as ssim
 from skimage.metrics import mean_squared_error
 
+import loadVim
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def fgsmAttack(inputs, model, true_label, epsilon=0.1):
@@ -30,7 +32,10 @@ def saveImageTensor(tensor, path, label, fname):
     # As such, we save the tensors and load them as a dataset.
 
     # Ensure directory exists
-    dir = f"{path}/{label.item()}"
+    if isinstance(label, str):
+        dir = f"{path}/{label}"
+    else:
+        dir = f"{path}/{label.item()}"
     os.makedirs(dir, exist_ok=True)
     torch.save(tensor, f"{dir}/{fname}.pt")
 
@@ -57,12 +62,27 @@ def main():
     parser.add_argument('--dataset', type=str, default='imagenette', help='Dataset to use')
     parser.add_argument('--path', type=str, default='./data_adv', help='Path to generate dataset')
     parser.add_argument('--model', type=str, default='google/vit-base-patch16-224', help='Model to use')
+    parser.add_argument('--checkpoint', type=str, default=None, help='Checkpoint to load')
     args = parser.parse_args()
 
-    # Load Model and prepare processor
-    model = AutoModelForImageClassification.from_pretrained(args.model).to(device)
-    processor = AutoImageProcessor.from_pretrained(args.model)
-
+    # Load Model and prepare processor    
+    if args.checkpoint:
+        if args.model == 'google/vit-base-patch16-224':
+            model, processor = loadVim.prepareDownstreamVit()
+        else:
+            model, processor = loadVim.prepareDownstreamResnet()
+        checkpoint = torch.load(args.checkpoint)
+        model.load_state_dict(checkpoint["state_dict"])
+    else:
+        model = AutoModelForImageClassification.from_pretrained(args.model)
+        processor = AutoImageProcessor.from_pretrained(args.model)
+       
+    # Update label mapping
+    dirs = sorted([d for d in os.listdir(args.dataset)])
+    id2label = {key: val for key, val in enumerate(dirs)}
+    model.config.id2label = id2label
+        
+    model.to(device)
     model.eval()
     torch.no_grad()
     processor.do_normalize = False  # Strip preprocessing except resize
@@ -88,7 +108,7 @@ def main():
     def process_image(image):
         return processor(image, return_tensors="pt").pixel_values.squeeze(0)
     
-    data = datasets.ImageFolder('./imagenette/imagenette2/val', transform=transforms.Lambda(process_image))
+    data = datasets.ImageFolder(args.dataset, transform=transforms.Lambda(process_image))
 
     dataLoader = torch.utils.data.DataLoader(data, batch_size=1, shuffle=False, num_workers=0)
 
@@ -100,7 +120,7 @@ def main():
                                     arg_name = 'epsilon',
                                     mode = "binary",
                                     arg_min = 0.001,
-                                    arg_max = 1,
+                                    arg_max = 3,
                                     arg_step = 0.001,
                                     preproc_fn = normalize,
                                     apply_before_preproc=True
@@ -112,11 +132,11 @@ def main():
     os.makedirs(path_adversarial_dataset, exist_ok=True)
 
     log = []
-
+    advFailCount = 0
+    
     for i, (input, label) in enumerate(dataLoader):
         input = input.to(device)
         # Convert label item to ImageNet label
-        label = torch.tensor([netteToImageNetConv[label.item()]]).to(device)
         label = label.to(device)
 
         prediction = pred(input, model)
@@ -126,6 +146,11 @@ def main():
             attack_kwargs={'model':model,'true_label':label}
 
             alt_im, min_eps = min_pert.evaluate(input, attack_kwargs=attack_kwargs, target=label)
+            
+            if alt_im is None:
+                print("Could not generate adversarial example")
+                advFailCount += 1
+                continue
 
             altpred = pred(alt_im, model)
             print(f"adv_{i} is a {model.config.id2label[label.item()]} but classifies as {model.config.id2label[altpred.item()]} with epsilon {min_eps}")
@@ -134,13 +159,13 @@ def main():
             log.append({"index": i, "label": label.item(), "prediction": altpred.item(), "epsilon": min_eps, "mse": mse, "ssim": ssim_val, "linf": linf})
 
             # Save the adversarial example to new dataset
-            saveImageTensor(alt_im, path_adversarial_dataset, label, f"adv_{i}")
+            saveImageTensor(alt_im, path_adversarial_dataset, model.config.id2label[label.item()], f"adv_{i}")
         else:
             print(f"Incorrect classification, label: {label}, prediction: {prediction}, skipping...")
 
     # Pickle the log
     with open(f"{path_adversarial_dataset}/log.pkl", "wb") as f:
-        pickle.dump(log, f)
+        pickle.dump({"fails":advFailCount, "log": log}, f)
 
 if __name__ == "__main__":
     main()
