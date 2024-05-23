@@ -7,7 +7,7 @@ Celeb*
 *.zip
 *.pth
 .ipynb_checkpoints/
-__pycache__/
+__pycache__
 models/*
 
 AdvRobustnessData
