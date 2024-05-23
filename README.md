@@ -73,7 +73,7 @@ python ./genAdvDataset.py --path "./CelebAdv/CelAdvVitA" --dataset "./CelebSubse
 python ./genAdvDataset.py --path "./CelebAdv/CelAdvVitB" --dataset "./CelebSubset/CelebVal" --model "google/vit-base-patch16-224" --checkpoint "./models/VitB.pth"
 ```
 
-### For Robustness of Adversarially Trained Models
+### Robustness of Adversarially Trained Models
 
 ```bash
 python ./genAdvDataset.py --path "./AdvRobustnessData/RobustnessResNetA" --dataset "./CelebSubset/CelebTest" --model "microsoft/resnet-152" --checkpoint "./models/AdvResNetA.pth"
@@ -81,6 +81,16 @@ python ./genAdvDataset.py --path "./AdvRobustnessData/RobustnessResNetA" --datas
 
 ```bash
 python ./genAdvDataset.py --path "./AdvRobustnessData/RobustnessVitA" --dataset "./CelebSubset/CelebTest" --model "google/vit-base-patch16-224" --checkpoint "./models/AdvVitA.pth"
+```
+
+### Robustness with blurred inputs
+
+```bash
+python ./genAdvDataset.py --blur --path "./BlurRobustnessData/BlurResNetA" --dataset "./CelebSubset/CelebTest" --model "microsoft/resnet-152" --checkpoint "./models/ResNetA.pth"
+```
+
+```bash
+python ./genAdvDataset.py --blur --path "./BlurRobustnessData/BlurVitA" --dataset "./CelebSubset/CelebTest" --model "google/vit-base-patch16-224" --checkpoint "./models/VitA.pth"
 ```
 
 ## Setup Vim - Not working, only linux

@@ -63,6 +63,7 @@ def main():
     parser.add_argument('--path', type=str, default='./data_adv', help='Path to generate dataset')
     parser.add_argument('--model', type=str, default='google/vit-base-patch16-224', help='Model to use')
     parser.add_argument('--checkpoint', type=str, default=None, help='Checkpoint to load')
+    parser.add_argument('--blur', action='store_true', help='Apply blur to images')
     args = parser.parse_args()
 
     # Load Model and prepare processor    
@@ -105,8 +106,13 @@ def main():
         return idx
 
     # Load dataset
-    def process_image(image):
-        return processor(image, return_tensors="pt").pixel_values.squeeze(0)
+    if args.blur:
+        def process_image(image):
+            img = processor(image, return_tensors="pt").pixel_values.squeeze(0)
+            return transforms.GaussianBlur(kernel_size=11, sigma=2)(img)
+    else:
+        def process_image(image):
+            return processor(image, return_tensors="pt").pixel_values.squeeze(0)
     
     data = datasets.ImageFolder(args.dataset, transform=transforms.Lambda(process_image))
 
