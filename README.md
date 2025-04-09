@@ -1,23 +1,31 @@
-# Adversarial Robustness of ViT vs ResNet
+# Adversarial Robustness of ViM vs ViT vs ResNet
 
-This is our group project for DD2424 at KTH.
+This repository contains my results for the DD2424 project at KTH.
+In short, this project aimed to investigate the baseline adversarial robustness of the 
+new Vision Mamba architecture published by [HUST researchers](https://github.com/hustvl/Vim).
+
+For further details, see the brief report in ```ProjectReport.pdf```.
 
 ## Overview
 
-Overview of repository structure and file contents
+Overview of the relevant parts of the repository structure and file contents
     
     ```bash
     .
-    ├── images - visuals generated for the report
-    ├── mamba_ssm - author modification of mamba_ssm from https://github.com/hustvl/Vim
-    ├── vim - vim model folder from https://github.com/hustvl/Vim
-    ├── README.md
-    ├── requirements.txt
-    ├── genAdvDataset.py
-    ├── loadVim.py - utility functions to load vim model
-    ├── vimGenAdv.ipynb - notebook to generate adversarial examples for vim model
-    ├── robustnessAnalysisBaseline.ipynb 
-    ├── fgsm.ipynb - Deprecated
+    ├── images/                             # Visuals generated for the report
+    ├── mamba_ssm/                          # Modified mamba_ssm from https://github.com/hustvl/Vim
+    ├── vim/                                # ViM model implementation from https://github.com/hustvl/Vim
+    ├── datasetProcessor.ipynb              # Notebook for dataset processing and preparation
+    ├── fgsm.ipynb                          # Fast Gradient Sign Method implementation
+    ├── genAdvDataset.py                    # Script to generate adversarial datasets
+    ├── landscapeVisuals.ipynb              # Notebook for generating landscape visualizations
+    ├── loadVim.py                          # Utility functions to load the ViM model
+    ├── ProjectReport.pdf                   # Final project report document
+    ├── robustnessAnalysisBaseline.ipynb    # Notebook for baseline robustness analysis
+    ├── trainingVisuals.ipynb               # Notebook for visualizing training metrics
+    ├── transferAttack.ipynb                # Notebook for transfer attack experiments
+    ├── vimGenAdv.ipynb                     # Notebook to generate adversarial examples for ViM model
+    ├── vimTrainLoop.ipynb                  # Notebook with ViM model training implementation
     ```
 
 
